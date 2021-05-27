@@ -40,7 +40,10 @@ def train_model(data, params):
             state_hunk = model.init_hidden_hunk()
 
             pad_added_code, pad_removed_code, label = batch
-            label = torch.cuda.FloatTensor(label)
+            if torch.cuda.is_available():
+                label = torch.cuda.FloatTensor(label)
+            else:
+                label = torch.FloatTensor(label)
             optimizer.zero_grad()
             predict = model.forward(pad_added_code, pad_removed_code, state_hunk, state_sent, state_word)
             loss = criterion(predict, label)

@@ -3,6 +3,7 @@ from lmg_padding import processing_data
 import pickle
 from lmg_cc2ftr_train import train_model
 from lmg_cc2ftr_extracted import extracted_cc2ftr
+from sys import exit
 
 def read_args_lmg():
     parser = argparse.ArgumentParser()
@@ -31,19 +32,21 @@ def read_args_lmg():
     parser.add_argument('-l2_reg_lambda', type=float, default=1e-5, help='regularization rate')
     parser.add_argument('-learning_rate', type=float, default=1e-4, help='learning rate')
     parser.add_argument('-batch_size', type=int, default=8, help='batch size')
-    parser.add_argument('-num_epochs', type=int, default=50, help='the number of epochs')    
+    parser.add_argument('-num_epochs', type=int, default=2, help='the number of epochs')    
     parser.add_argument('-save-dir', type=str, default='snapshot', help='where to save the snapshot')    
 
     # CUDA
     parser.add_argument('-device', type=int, default=-1,
                         help='device to use for iterate data, -1 mean cpu [default: -1]')
-    parser.add_argument('-no-cuda', action='store_true', default=False, help='disable the GPU')
+    parser.add_argument('-no-cuda', action='store_true', default=True, help='disable the GPU')
     return parser
 
 if __name__ == '__main__':        
     params = read_args_lmg().parse_args()    
     if params.train is True:
         train_data = pickle.load(open(params.train_data, 'rb'))
+        
+        
         train_msg, train_diff = train_data[0], train_data[1]
         dictionary = pickle.load(open(params.dictionary_data, 'rb'))        
         train_pad_added_code, train_pad_removed_code = processing_data(code=train_diff, dictionary=dictionary, params=params)

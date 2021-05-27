@@ -4,8 +4,19 @@ import numpy as np
 import math
 
 def commit_msg_label(data, dict_msg):
+    #Creating one hot representation of log msg.
+    #If log msg is "Added intro" and if added is 7890th element in dict_msg, we get a one hot vector with that element as one.
     labels_ = np.array([1 if w in d.split() else 0 for d in data for w in dict_msg])
     labels_ = np.reshape(labels_, (int(labels_.shape[0] / len(dict_msg)), len(dict_msg)))
+    # for w in data[0].split():
+    #     try:
+    #         indval = dict_msg.index(w)
+    #         print(w)
+    #         print(indval)
+    #         print(labels_[0][indval-5:indval+5])
+    #     except ValueError:
+    #         continue
+    
     return labels_
 
 def save(model, save_dir, save_prefix, epochs):

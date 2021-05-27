@@ -134,8 +134,11 @@ class HierachicalRNN(nn.Module):
             words = list()
             for k in range(n_batch):
                 words.append(x[k][j])                
-            words = np.array(words)            
-            sent, state_word = self.wordRNN(torch.cuda.LongTensor(words).view(-1, self.batch_size), hid_state_word)
+            words = np.array(words) 
+            if torch.cuda.is_available():
+                sent, state_word = self.wordRNN(torch.cuda.LongTensor(words).view(-1, self.batch_size), hid_state_word)
+            else:
+                sent, state_word = self.wordRNN(torch.LongTensor(words).view(-1, self.batch_size), hid_state_word)
             sents.append(sent)            
         output = torch.squeeze(torch.cat(sents, dim=2))
         return output
@@ -223,10 +226,21 @@ class HierachicalRNN(nn.Module):
         return F.relu(W_output + V_output)
 
     def init_hidden_hunk(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        if torch.cuda.is_available():
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        else:
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
 
     def init_hidden_sent(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
-
+        if torch.cuda.is_available():
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        else:
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
+        
     def init_hidden_word(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        
+        if torch.cuda.is_available():
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        else:
+            return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
+            
